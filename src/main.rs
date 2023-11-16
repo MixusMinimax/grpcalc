@@ -36,7 +36,7 @@ impl Calculator for CalculatorService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let addr = "127.0.0.1:50051".parse().unwrap();
+    let addr = "0.0.0.0:50051".parse().unwrap();
     let calculator_service = CalculatorService::default();
 
     println!("Calculator server listening on {}", addr);
@@ -49,7 +49,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .unwrap(),
         )
         .add_service(CalculatorServer::new(calculator_service))
-        .serve(addr)
+        .serve_with_shutdown(addr, async {
+            tokio::signal::ctrl_c()
+                .await
+                .expect("failed to install CTRL+C signal handler");
+        })
         .await?;
 
     Ok(())
