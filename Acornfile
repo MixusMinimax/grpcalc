@@ -1,0 +1,8 @@
+containers: {
+  calculator: {
+    build: ".",
+    ports: {
+      publish: "50051/http2"
+    }
+  }
+}
